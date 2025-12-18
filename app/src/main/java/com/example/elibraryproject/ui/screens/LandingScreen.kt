@@ -11,14 +11,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.elibraryproject.ui.components.AppHeader
 import com.example.elibraryproject.ui.components.BookCard
-import com.example.elibraryproject.data.dummyBooks
+import com.example.elibraryproject.viewmodel.BookViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingScreen(navController: NavHostController) {
+fun LandingScreen(
+    navController: NavHostController,
+    viewModel: BookViewModel
+) {
+    val books = viewModel.books
+    val isLoading = viewModel.isLoading
     var query by remember { mutableStateOf("") }
 
     LazyVerticalGrid(
@@ -30,13 +36,13 @@ fun LandingScreen(navController: NavHostController) {
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        // HEADER sebagai item full-width
+        // HEADER
         item(span = { GridItemSpan(2) }) {
             AppHeader(
                 searchQuery = query,
-                onQueryChange = {query = it},
-                onLogoClick = {navController.navigate("home")},
-                onKatalogClick = {navController.navigate("katalog")}
+                onQueryChange = { query = it },
+                onLogoClick = { navController.navigate("home") },
+                onKatalogClick = { navController.navigate("katalog") }
             )
         }
 
@@ -44,7 +50,7 @@ fun LandingScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(20.dp))
         }
 
-        // REKOMENDASI BUKU TITLE
+        // REKOMENDASI
         item(span = { GridItemSpan(2) }) {
             Text(
                 text = "Rekomendasi Buku",
@@ -56,18 +62,21 @@ fun LandingScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        // REKOMENDASI HORIZONTAL
+        // HORIZONTAL LIST (ambil 5 pertama)
         item(span = { GridItemSpan(2) }) {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(dummyBooks.take(5)) { book ->
-                    BookCard(
-                        book = book,
-                        onClick = { navController.navigate("detail/${book.key}") }
-                    )
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(books.take(5)) { book ->
+                        BookCard(
+                            book = book,
+                            onClick = {
+                                navController.navigate("detail/${book.id}")
+                            }
+                        )
+                    }
                 }
-
             }
         }
 
@@ -75,7 +84,7 @@ fun LandingScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // DAFTAR BUKU TITLE
+        // DAFTAR BUKU
         item(span = { GridItemSpan(2) }) {
             Text(
                 text = "Daftar Buku",
@@ -87,11 +96,13 @@ fun LandingScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        // GRID BUKU
-        items(dummyBooks) { book ->
+        // GRID LIST
+        items(books) { book ->
             BookCard(
                 book = book,
-                onClick = { navController.navigate("detail/${book.key}") }
+                onClick = {
+                    navController.navigate("detail/${book.id}")
+                }
             )
         }
     }

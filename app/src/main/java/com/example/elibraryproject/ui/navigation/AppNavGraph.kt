@@ -10,11 +10,14 @@ import androidx.navigation.navArgument
 import com.example.elibraryproject.ui.screens.DetailScreen
 import com.example.elibraryproject.ui.screens.KatalogScreen
 import com.example.elibraryproject.ui.screens.LandingScreen
+import com.example.elibraryproject.viewmodel.BookViewModel
+import com.example.yourapp.ui.screens.HomeScreen
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: BookViewModel
 ) {
     NavHost(
         navController = navController,
@@ -23,27 +26,19 @@ fun AppNavGraph(
     ) {
 
         composable("home") {
-            LandingScreen(navController)
+            HomeScreen(viewModel)
         }
 
         composable("katalog") {
-            KatalogScreen(navController)
+            KatalogScreen(navController, viewModel)
         }
 
-        // DETAIL PAKAI bookKey (String)
         composable(
-            route = "detail/{bookKey}",
-            arguments = listOf(
-                navArgument("bookKey") {
-                    type = NavType.StringType
-                }
-            )
+            route = "detail/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val bookKey = backStackEntry.arguments?.getString("bookKey") ?: ""
-            DetailScreen(
-                navController = navController,
-                bookKey = bookKey
-            )
+            val bookId = backStackEntry.arguments?.getInt("bookId") ?: -1
+            DetailScreen(navController, bookId, viewModel)
         }
     }
 }

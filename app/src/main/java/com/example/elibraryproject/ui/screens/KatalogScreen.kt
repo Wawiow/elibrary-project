@@ -16,7 +16,7 @@ import com.example.elibraryproject.viewmodel.BookViewModel
 @Composable
 fun KatalogScreen(
     navController: NavController,
-    viewModel: BookViewModel = viewModel()
+    viewModel: BookViewModel
 ) {
     val books = viewModel.books
     val isLoading = viewModel.isLoading
@@ -32,7 +32,7 @@ fun KatalogScreen(
                 BookCard(
                     book = book,
                     modifier = Modifier.clickable {
-                        navController.navigate("detail/${book.key ?: ""}")
+                        navController.navigate("detail/${book.id}")
                     }
                 )
             }

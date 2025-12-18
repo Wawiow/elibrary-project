@@ -31,7 +31,7 @@ fun BookCard(
             modifier = Modifier.padding(12.dp)
         ) {
             AsyncImage(
-                model = book.imageUrl,
+                model = book.thumbnailUrl,
                 contentDescription = book.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

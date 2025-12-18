@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.elibraryproject.data.dummyBooks
 import com.example.elibraryproject.data.model.BookDoc
 import com.example.elibraryproject.viewmodel.BookViewModel
 
@@ -31,10 +30,10 @@ import com.example.elibraryproject.viewmodel.BookViewModel
 @Composable
 fun DetailScreen(
     navController: NavController,
-    bookKey: String,
-    viewModel: BookViewModel = viewModel()
+    bookId: Int,
+    viewModel: BookViewModel
 ) {
-    val book = viewModel.books.find { it.key == bookKey }
+    val book = viewModel.getBookById(bookId)
 
     if (book == null) {
         Box(
@@ -67,11 +66,12 @@ fun DetailScreen(
         ) {
 
             AsyncImage(
-                model = book.imageUrl,
+                model = book.thumbnailUrl,   // ✅ FIX
                 contentDescription = book.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(350.dp)
+                    .height(350.dp),
+                contentScale = ContentScale.Crop
             )
 
             Spacer(Modifier.height(16.dp))
@@ -105,6 +105,7 @@ fun DetailScreen(
         }
     }
 }
+
 
 @Composable
 fun MetadataCard(

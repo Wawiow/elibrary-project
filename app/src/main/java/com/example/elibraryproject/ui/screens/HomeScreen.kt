@@ -13,7 +13,7 @@ import com.example.elibraryproject.viewmodel.BookViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: BookViewModel = viewModel()
+    viewModel: BookViewModel
 ) {
     val books = viewModel.books
     val isLoading = viewModel.isLoading

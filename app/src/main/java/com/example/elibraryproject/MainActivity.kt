@@ -1,6 +1,6 @@
 package com.example.elibraryproject
 
-import BookRepository
+
 import BookViewModelFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.elibraryproject.data.api.ApiClient
+import com.example.elibraryproject.data.repository.BookRepository
 
 import com.example.elibraryproject.ui.components.BottomBar
 import com.example.elibraryproject.ui.navigation.AppNavGraph
@@ -30,25 +32,27 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val api = ApiClient.openLibraryApi
-            val repo = BookRepository(api)
             val vm: BookViewModel = viewModel(
-                factory = BookViewModelFactory(repo)
+                factory = BookViewModelFactory(
+                    BookRepository(ApiClient.apiService))
             )
 
+            LaunchedEffect(Unit) {
+                vm.loadFeaturedDocuments()
+            }
 
+            // Observasi data featuredDocuments
+//            val featuredDocuments by vm.featuredDocuments.collectAsState()
 
             Scaffold(
-                bottomBar = {
-                    BottomBar(navController)
-                }
+                bottomBar = { BottomBar(navController) }
             ) { innerPadding ->
                 AppNavGraph(
                     navController = navController,
                     modifier = Modifier
-                        .fillMaxSize()        // WAJIB
-                        .padding(innerPadding)
-
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    viewModel = vm
                 )
             }
         }
